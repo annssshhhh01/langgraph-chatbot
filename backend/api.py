@@ -22,6 +22,7 @@ class llmResponse(BaseModel):
     reply:str
 
 #my name is ansh
+#hey
 @app.post("/send",response_model=llmResponse)   #response_model is in built and is used to check whether the output coming is of schema llmresponse or not
 def response(req:UserReply):
     thread_id=req.thread_id or str(uuid4())
