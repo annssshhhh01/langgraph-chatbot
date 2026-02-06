@@ -51,18 +51,22 @@ Install dependencies:
 pip install fastapi uvicorn langgraph langchain_groq python-dotenv
 ```
 Configure environment: Create a .env file in the root:
-
+```
 GROQ_API_KEY=your_groq_api_key_here
 ```
+
+Run Server:
 ```
-Run Server: python -m uvicorn api:app --reload
+python -m uvicorn api:app --reload
 ```
-```
+
 2. Frontend Setup
-Navigate to chatbot: cd chatbot
+Navigate to chatbot:
 ```
+ cd chatbot
 ```
 Install & Run:
+````
 npm install
 npm run dev
 ```
