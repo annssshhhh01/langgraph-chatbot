@@ -14,14 +14,13 @@ try{
 const userMessage={role:"user",content:input}
 Setmessages((prev)=>[...prev,userMessage])
 
-const response=await fetch("http://127.0.0.1:8000/send",{
+const response=await fetch("http://127.0.0.1:8000/stream",{
   method:"POST",
   headers:{"Content-Type":"application/json"},
   body:JSON.stringify({
     message:input,
     thread_id:Threadid
   })
-
 })
 if(!response.ok){
  const text=await response.text(); // gives whatever is written in the response after failing
@@ -29,11 +28,30 @@ console.error("backend error:",text);
 return;
 }
 console.log("Response status:", response.status);
-const data=await response.json()
 
-Setmessages((prev)=>[...prev,{role:"assistant",content:data.reply}])
+//creating a variable which will store the threadid of the user (main use case of this is to use the threadid for resume feature)
+const newThreadid=response.headers.get("thread_id");
+if(newThreadid)
+  SetThreadid(newThreadid)
+//since the content is coming chunk by chunk so we need a loop so first we will initialize setmessage as ""
+const reader=response.body.getReader();
+const decoder =new TextDecoder();
+let assistantText="";
 
-SetThreadid(data.thread_id)
+Setmessages((prev)=>[...prev,{role:"assistant",content:""}])
+
+while (true){
+const{done,value}=await reader.read()
+if(done) break;
+const chunk=decoder.decode(value)
+assistantText+=chunk
+Setmessages((prev)=>{
+ const updated=[...prev];
+ updated[updated.length-1]={role:"assistant","content":assistantText}
+ return updated;
+})
+}
+
 setInput("")
 }
 catch(err){
