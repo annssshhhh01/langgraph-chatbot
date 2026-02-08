@@ -19,7 +19,7 @@ class UserReply(BaseModel):
     message:str
     thread_id:str|None=None
 
-@app.post("/stream")
+@app.post("/stream",response_class=StreamingResponse)
 def response(req:UserReply):
     thread_id=req.thread_id or str(uuid4())
 #note that AImessage is a class and chunk is an object of that class and content is just a method 
